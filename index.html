@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Matter Selection</title>
+
+<style>
+    body {
+        margin: 0;
+        padding: 0;
+        background: #F5F7FB;
+        font-family: Calibri, sans-serif;
+        color: #0F2D56;
+    }
+
+    .page-wrap {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 60px 20px;
+        text-align: center;
+        position: relative;
+    }
+
+    h1 {
+        font-size: 30px;
+        margin-bottom: 10px;
+        font-weight: 700;
+    }
+
+    .subtext {
+        font-size: 17px;
+        color: #6B7280;
+        margin-bottom: 50px;
+    }
+
+    .card-row {
+        display: flex;
+        justify-content: center;
+        gap: 35px;
+        flex-wrap: wrap;
+    }
+
+    .big-card {
+        width: 450px;
+        background: #FFFFFF;
+        padding: 40px 30px 45px 30px;
+        border-radius: 16px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+        text-align: center;
+    }
+
+    .matter-card {
+        width: 350px;
+        background: #FFFFFF;
+        padding: 35px 25px 40px 25px;
+        border-radius: 16px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+        text-align: center;
+    }
+
+    .matter-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(330px, 1fr));
+        gap: 35px;
+        justify-items: center;
+        margin-top: 40px;
+        width: 100%;
+    }
+
+    .card-title {
+        font-size: 20px;
+        font-weight: 700;
+        margin-bottom: 12px;
+    }
+
+    .card-desc {
+        color: #6B7280;
+        font-size: 15px;
+        margin-bottom: 28px;
+        line-height: 1.5;
+    }
+
+    .btn-continue {
+        background: #0F2D56;
+        color: white;
+        width: 100%;
+        padding: 14px 0;
+        border-radius: 10px;
+        font-size: 17px;
+        font-weight: 600;
+        cursor: pointer;
+        border: none;
+    }
+
+    .btn-continue:hover {
+        background: #0c2343;
+    }
+
+    .hidden {
+        display: none;
+    }
+
+    /* LOADER */
+    #matterLoader {
+        position: fixed;
+        inset: 0;
+        background: rgba(255,255,255,0.75);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 9999;
+    }
+
+    .modal-loader-inner {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .modal-loader-spinner {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        border: 4px solid #d4d8e4;
+        border-top-color: #0F2D56;
+        animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+        to { transform: rotate(360deg); }
+    }
+
+    /* BACK BUTTON */
+    .back-button {
+        position: absolute;
+        top: 40px;
+        left: 40px;
+        font-size: 16px;
+        font-weight: 600;
+        color: #0F2D56;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 14px;
+        border-radius: 8px;
+        transition: background 0.2s ease;
+        z-index: 10;
+    }
+
+    .back-button:hover {
+        background: #eef1f6;
+    }
+
+    /* SCREEN 3 LIST ITEMS */
+    .matter-row {
+        background: #ffffff;
+        padding: 22px 25px;
+        border-radius: 12px;
+        box-shadow: 0 4px 18px rgba(0,0,0,0.05);
+        margin-bottom: 18px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        cursor: pointer;
+        transition: background 0.15s ease, border 0.15s ease;
+    }
+
+    .matter-row:hover {
+        background: #f1f4f9;
+    }
+
+    /* ⭐ Recommended Design */
+    .recommended-section {
+        border-bottom: 1px solid #d3d7e0;
+        margin-bottom: 25px;
+        padding-bottom: 20px;
+    }
+
+    .recommended-title {
+        font-size: 18px;
+        font-weight: 700;
+        margin-bottom: 12px;
+        text-align: left;
+    }
+
+    .recommended-row {
+        background: #EDF2FA;
+        border: 1px solid #0F2D56;
+        position: relative;
+    }
+
+    .recommended-star {
+        position: absolute;
+        left: -18px;
+        top: 18px;
+        font-size: 20px;
+        color: #f0b200;
+        font-weight: bold;
+    }
+
+    .matter-left {
+        text-align: left;
+    }
+
+    .matter-title {
+        font-size: 18px;
+        font-weight: 700;
+        margin-bottom: 6px;
+    }
+
+    .matter-desc {
+        font-size: 14px;
+        color: #6B7280;
+        line-height: 1.45;
+    }
+
+    .select-btn {
+        background: #0F2D56;
+        color: white;
+        padding: 10px 20px;
+        border-radius: 10px;
+        font-size: 15px;
+        font-weight: 600;
+        cursor: pointer;
+        border: none;
+    }
+
+    .select-btn:hover {
+        background: #0c2343;
+    }
+
+</style>
+</head>
+
+<body>
+
+<!-- LOADER -->
+<div id="matterLoader">
+    <div class="modal-loader-inner">
+        <div class="modal-loader-spinner"></div>
+    </div>
+</div>
+
+<!-- SCREEN 1 -->
+<div id="screen1" class="page-wrap">
+
+    <h1>What would you like to do?</h1>
+    <div class="subtext">Choose the purpose of this matter to proceed.</div>
+
+    <div class="card-row">
+
+        <div class="big-card">
+            <div class="card-title">Start a New Matter</div>
+            <div class="card-desc">You’re creating something new, like an agreement or legal policy.</div>
+            <button class="btn-continue" onclick="selectWorkType('matter')">Continue</button>
+        </div>
+
+        <div class="big-card">
+            <div class="card-title">Start or Update a Legal Document</div>
+            <div class="card-desc">You're creating something new, like an agreement or legal policy.</div>
+            <button class="btn-continue" onclick="selectWorkType('document')">Continue</button>
+        </div>
+
+    </div>
+</div>
+
+<!-- SCREEN 2 -->
+<div id="screen2" class="page-wrap hidden">
+
+    <div class="back-button" onclick="goBack()">&larr; Back</div>
+
+    <h1>Select Matter Type</h1>
+
+    <div class="matter-grid">
+
+        <div class="matter-card">
+            <div class="card-title">Client Matters</div>
+            <div class="card-desc">For issues related to clients such as engagement, onboarding, or disputes.</div>
+            <button class="btn-continue" onclick="openMatterList('client')">Continue</button>
+        </div>
+
+        <div class="matter-card">
+            <div class="card-title">Employee Matters</div>
+            <div class="card-desc">Handle internal team concerns like onboarding, roles, or performance.</div>
+            <button class="btn-continue" onclick="openMatterList('employee')">Continue</button>
+        </div>
+
+        <div class="matter-card">
+            <div class="card-title">Formations Matters</div>
+            <div class="card-desc">Startups, new entities, or legal paperwork for business formation.</div>
+            <button class="btn-continue" onclick="openMatterList('formations')">Continue</button>
+        </div>
+
+        <div class="matter-card">
+            <div class="card-title">Marketing Matters</div>
+            <div class="card-desc">Concerns around branding, messaging, or outbound strategy.</div>
+            <button class="btn-continue" onclick="openMatterList('marketing')">Continue</button>
+        </div>
+
+        <div class="matter-card">
+            <div class="card-title">Vendor Matters</div>
+            <div class="card-desc">Disputes, agreements, or workflows involving outside suppliers.</div>
+            <button class="btn-continue" onclick="openMatterList('vendor')">Continue</button>
+        </div>
+
+    </div>
+</div>
+
+<!-- SCREEN 3 -->
+<div id="screen3" class="page-wrap hidden">
+
+    <div class="back-button" onclick="goBack()">&larr; Back</div>
+
+    <h1 id="screen3Title">Select a Matter Type</h1>
+    <div id="breadcrumbs" style="color:#6B7280; font-size:16px; margin-bottom:30px;"></div>
+
+    <input 
+        id="matterSearch" 
+        type="text" 
+        placeholder="Search matter type..." 
+        oninput="filterMatters()"
+        style="
+            width: 350px;
+            padding: 12px 15px;
+            border-radius: 10px;
+            border: 1px solid #d5d7dc;
+            margin-bottom: 35px;
+            font-size: 15px;
+            text-align:left;
+        "
+    />
+
+    <div id="matterList"></div>
+
+</div>
+
+<script>
+/* BACKSTACK */
+let historyStack = [];
+function goTo(screen) {
+    document.querySelectorAll('.page-wrap').forEach(s => s.classList.add('hidden'));
+    document.getElementById(screen).classList.remove('hidden');
+    historyStack.push(screen);
+}
+function goBack() {
+    if (historyStack.length > 1) historyStack.pop();
+    const prev = historyStack[historyStack.length - 1];
+    document.getElementById("matterLoader").style.display = "flex";
+    setTimeout(() => {
+        document.querySelectorAll('.page-wrap').forEach(s => s.classList.add('hidden'));
+        document.getElementById(prev).classList.remove('hidden');
+        document.getElementById("matterLoader").style.display = "none";
+    }, 500);
+}
+
+/* DATA */
+const matterData = {
+    document: {
+        client:[
+            { title:"Board Member Appointee Resolution", desc:"Document the appointment of a board member." },
+            { title:"Miscellaneous Legal Work", desc:"General-purpose legal document tasks." },
+            { title:"Board of Director Resolution", desc:"Record key board decisions." },
+            { title:"Board Resolutions", desc:"Document board approvals." },
+            { title:"Cap Table Management", desc:"Manage stakeholder ownership records." },
+            { title:"Board Meeting Recordkeeping", desc:"Preserve minutes and corporate actions." },
+            { title:"Privacy Policy", desc:"Create clear compliance-focused privacy terms." },
+            { title:"Sales Contract", desc:"Draft or review enforceable sales terms." },
+            { title:"Terms & Services", desc:"Define product or service engagement rules." },
+            { title:"Stock Ledger Preparation", desc:"Prepare stock issuance and holdings records." }
+        ],
+        employee:[
+            { title:"Employee Handbook", desc:"Comprehensive workplace rules and benefits." },
+            { title:"Employee Agreement", desc:"Employment terms and role definitions." },
+            { title:"Employee Confidentiality Agreement", desc:"Protect sensitive business data." },
+            { title:"Update Filing with Department of Ed", desc:"Maintain compliance with state filings." }
+        ],
+        formations:[
+            { title:"Company Bylaws", desc:"Rulebook governing corporate operations." },
+            { title:"Corporate Shareholder Agreement", desc:"Define investor rights and obligations." },
+            { title:"LLC Operating Agreement", desc:"Govern LLC structure and management." },
+            { title:"CTA Filing", desc:"Meet federal ownership reporting rules." }
+        ],
+        marketing:[
+            { title:"Marketing Material", desc:"Review brand and legal alignment." },
+            { title:"Social Media Material", desc:"Check legality of posts and content." },
+            { title:"Marketing Content Review", desc:"Ensure compliance and accuracy." },
+            { title:"Content Calendar Review", desc:"Verify publication and compliance timing." },
+            { title:"Legal News Newsletter", desc:"Create updates tailored to your business." }
+        ],
+        vendor:[
+            { title:"Reseller Agreement", desc:"Define distributor responsibilities." },
+            { title:"Vendor Agreement", desc:"Formalize vendor terms and expectations." },
+            { title:"Lease Agreement", desc:"Define commercial or residential terms." },
+            { title:"Vendor Non-Disclosure Agreement", desc:"Protect proprietary vendor information." }
+        ]
+    },
+    matter:{
+        client:[
+            { title:"Litigation Co-Counsel Tasks", desc:"Assist litigation teams with filings." },
+            { title:"Litigation Management", desc:"Oversee legal actions end-to-end." }
+        ],
+        employee:[
+            { title:"Employee Reprimand", desc:"Document formal warnings." },
+            { title:"Employee Investigation", desc:"Internal workplace reviews." },
+            { title:"Employee Termination", desc:"Prepare termination documentation." },
+            { title:"Employee Suspension", desc:"Define suspension terms." },
+            { title:"Employee Performance Plan", desc:"Improve performance with structured plans." },
+            { title:"Set Up 3rd Party Vendor for Audit of Shareholders", desc:"Coordinate external audits." },
+            { title:"HOA creation", desc:"Form a homeowners association." },
+            { title:"Non-Disclosure Agreement Matters", desc:"Draft or review NDAs." },
+            { title:"Wage Garnishment", desc:"Respond to garnishment orders." },
+            { title:"Dispute on Repairs", desc:"Resolve repair-related conflicts." }
+        ],
+        formations:[
+            { title:"IPO Work", desc:"Prepare company for going public." },
+            { title:"Capital Funding", desc:"Guidance on raising capital." },
+            { title:"Capital Raise Preparation", desc:"Prepare materials for investors." }
+        ],
+        marketing:[
+            { title:"Patent Matter", desc:"Protect inventions legally." },
+            { title:"Trade Secret Matter", desc:"Safeguard proprietary processes." },
+            { title:"Trademark Matter", desc:"Register and protect trademarks." }
+        ],
+        vendor:[]
+    }
+};
+
+/* STATE */
+let selectedWorkType = null;
+let selectedCategory = null;
+
+/* SCREEN LOGIC */
+function selectWorkType(type) {
+    selectedWorkType = type;
+    document.getElementById("matterLoader").style.display = "flex";
+    setTimeout(() => {
+        goTo("screen2");
+        document.getElementById("matterLoader").style.display = "none";
+    }, 500);
+}
+
+function openMatterList(category) {
+    selectedCategory = category;
+
+    const workLabel = selectedWorkType === "document" ? "Document Work" : "Matter Work";
+    const categoryLabels = {
+        client:"Client Matters",
+        employee:"Employee Matters",
+        formations:"Formations Matters",
+        marketing:"Marketing Matters",
+        vendor:"Vendor Matters"
+    };
+
+    document.getElementById("breadcrumbs").innerText =
+        `${workLabel} → ${categoryLabels[category]}`;
+
+    document.getElementById("matterLoader").style.display = "flex";
+    setTimeout(() => {
+        renderMatterList();
+        goTo("screen3");
+        document.getElementById("matterLoader").style.display = "none";
+    }, 500);
+}
+
+/* RENDER LIST */
+function renderMatterList() {
+    const list = document.getElementById("matterList");
+    const items = matterData[selectedWorkType][selectedCategory];
+
+    const recommendedSection = `
+        <div class="recommended-section">
+            <div class="recommended-title">Recommended Matters</div>
+
+            <div class="matter-row recommended-row">
+                <div class="matter-left">
+                    <div class="matter-title">★ Privacy Policy</div>
+                    <div class="matter-desc">Create or review clear and compliant policies for handling user or customer data.</div>
+                </div>
+                <button class="select-btn">Select</button>
+            </div>
+
+            <div class="matter-row recommended-row">
+
+                <div class="matter-left">
+                    <div class="matter-title">★Terms & Services</div>
+                    <div class="matter-desc">Draft or review terms that govern how users engage with your product or service.</div>
+                </div>
+                <button class="select-btn">Select</button>
+            </div>
+
+            <div class="matter-row recommended-row">
+
+                <div class="matter-left">
+                    <div class="matter-title">★Operating Agreement</div>
+                    <div class="matter-desc">Structure your LLC with a foundational document that governs internal operations.</div>
+                </div>
+                <button class="select-btn">Select</button>
+            </div>
+
+        </div>
+    `;
+
+    const itemsHTML = items.map(m => `
+        <div class="matter-row">
+            <div class="matter-left">
+                <div class="matter-title">${m.title}</div>
+                <div class="matter-desc">${m.desc}</div>
+            </div>
+            <button class="select-btn" onclick="selectMatter('${m.title}')">Select</button>
+        </div>
+    `).join("");
+
+    list.innerHTML = recommendedSection + itemsHTML;
+}
+
+/* SEARCH */
+function filterMatters() {
+    const q = document.getElementById("matterSearch").value.toLowerCase();
+    const items = matterData[selectedWorkType][selectedCategory];
+    const list = document.getElementById("matterList");
+
+    if (q.trim() === "") {
+        renderMatterList();
+        return;
+    }
+
+    const filtered = items.filter(m => m.title.toLowerCase().includes(q));
+
+    const html = filtered.map(m => `
+        <div class="matter-row">
+            <div class="matter-left">
+                <div class="matter-title">${m.title}</div>
+                <div class="matter-desc">${m.desc}</div>
+            </div>
+            <button class="select-btn" onclick="selectMatter('${m.title}')">Select</button>
+        </div>
+    `).join("");
+
+    list.innerHTML = html;
+}
+
+function selectMatter(title) {
+    alert("Selected: " + title);
+}
+</script>
+
+</body>
+</html>
