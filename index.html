@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!DOCTYPE html> 
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -171,6 +171,14 @@
         background: #f1f4f9;
     }
 
+    /* Category title style (same as Recommended Matters) */
+    .category-title {
+        font-size: 18px;
+        font-weight: 700;
+        margin: 25px 0 12px 0;
+        text-align: left;
+    }
+
     /* ⭐ Recommended Design */
     .recommended-section {
         border-bottom: 1px solid #d3d7e0;
@@ -220,7 +228,6 @@
     .select-btn:hover {
         background: #0c2343;
     }
-
 </style>
 </head>
 
@@ -233,80 +240,12 @@
     </div>
 </div>
 
-<!-- SCREEN 1 -->
-<div id="screen1" class="page-wrap">
-
-    <h1>What would you like to do?</h1>
-    <div class="subtext">Choose the purpose of this matter to proceed.</div>
-
-    <div class="card-row">
-
-        <div class="big-card">
-            <div class="card-title">Start a New Matter</div>
-            <div class="card-desc">You’re creating something new, like an agreement or legal policy.</div>
-            <button class="btn-continue" onclick="selectWorkType('matter')">Continue</button>
-        </div>
-
-        <div class="big-card">
-            <div class="card-title">Start or Update a Legal Document</div>
-            <div class="card-desc">You're creating something new, like an agreement or legal policy.</div>
-            <button class="btn-continue" onclick="selectWorkType('document')">Continue</button>
-        </div>
-
-    </div>
-</div>
-
-<!-- SCREEN 2 -->
-<div id="screen2" class="page-wrap hidden">
-
-    <div class="back-button" onclick="goBack()">&larr; Back</div>
-
-    <h1>Select Matter Type</h1>
-
-    <div class="matter-grid">
-
-        <div class="matter-card">
-            <div class="card-title">Client Matters</div>
-            <div class="card-desc">For issues related to clients such as engagement, onboarding, or disputes.</div>
-            <button class="btn-continue" onclick="openMatterList('client')">Continue</button>
-        </div>
-
-        <div class="matter-card">
-            <div class="card-title">Employee Matters</div>
-            <div class="card-desc">Handle internal team concerns like onboarding, roles, or performance.</div>
-            <button class="btn-continue" onclick="openMatterList('employee')">Continue</button>
-        </div>
-
-        <div class="matter-card">
-            <div class="card-title">Formations Matters</div>
-            <div class="card-desc">Startups, new entities, or legal paperwork for business formation.</div>
-            <button class="btn-continue" onclick="openMatterList('formations')">Continue</button>
-        </div>
-
-        <div class="matter-card">
-            <div class="card-title">Marketing Matters</div>
-            <div class="card-desc">Concerns around branding, messaging, or outbound strategy.</div>
-            <button class="btn-continue" onclick="openMatterList('marketing')">Continue</button>
-        </div>
-
-        <div class="matter-card">
-            <div class="card-title">Vendor Matters</div>
-            <div class="card-desc">Disputes, agreements, or workflows involving outside suppliers.</div>
-            <button class="btn-continue" onclick="openMatterList('vendor')">Continue</button>
-        </div>
-
-    </div>
-</div>
-
-<!-- SCREEN 3 -->
-<div id="screen3" class="page-wrap hidden">
-
-    <div class="back-button" onclick="goBack()">&larr; Back</div>
+<!-- ONLY SCREEN NOW (former Screen 3) -->
+<div id="screen3" class="page-wrap">
 
     <h1 id="screen3Title">Select a Matter Type</h1>
-    <div id="breadcrumbs" style="color:#6B7280; font-size:16px; margin-bottom:30px;"></div>
 
-    <!-- LEFT-ALIGNED SEARCH INPUT (FIXED) -->
+    <!-- SEARCH BAR -->
     <input 
         id="matterSearch" 
         type="text" 
@@ -326,34 +265,16 @@
     />
 
     <div id="matterList"></div>
-
 </div>
 
 <script>
-/* ============================================================
-    BACKSTACK SYSTEM — FIXED & FULLY WORKING
-============================================================ */
-let historyStack = ["screen1"]; 
-function goTo(screen) {
-    document.querySelectorAll('.page-wrap').forEach(s => s.classList.add('hidden'));
-    document.getElementById(screen).classList.remove('hidden');
-    historyStack.push(screen);
-}
-function goBack() {
-    if (historyStack.length > 1) historyStack.pop();
-    const prev = historyStack[historyStack.length - 1];
-    document.getElementById("matterLoader").style.display = "flex";
-    setTimeout(() => {
-        document.querySelectorAll('.page-wrap').forEach(s => s.classList.add('hidden'));
-        document.getElementById(prev).classList.remove('hidden');
-        document.getElementById("matterLoader").style.display = "none";
-    }, 500);
-}
-
-/* DATA */
-const matterData = {
-    document: {
-        client:[
+/* ===============================================
+   DATA MERGED INTO ONE GLOBAL LIST (ALL ITEMS)
+   =============================================== */
+const allMatters = [
+    {
+        category: "Client Matters",
+        items: [
             { title:"Board Member Appointee Resolution", desc:"Document the appointment of a board member." },
             { title:"Miscellaneous Legal Work", desc:"General-purpose legal document tasks." },
             { title:"Board of Director Resolution", desc:"Record key board decisions." },
@@ -363,109 +284,71 @@ const matterData = {
             { title:"Privacy Policy", desc:"Create clear compliance-focused privacy terms." },
             { title:"Sales Contract", desc:"Draft or review enforceable sales terms." },
             { title:"Terms & Services", desc:"Define product or service engagement rules." },
-            { title:"Stock Ledger Preparation", desc:"Prepare stock issuance and holdings records." }
-        ],
-        employee:[
+            { title:"Stock Ledger Preparation", desc:"Prepare stock issuance and holdings records." },
+            { title:"Litigation Co-Counsel Tasks", desc:"Assist litigation teams with filings." },
+            { title:"Litigation Management", desc:"Oversee legal actions end-to-end." }
+        ]
+    },
+    {
+        category: "Employee Matters",
+        items: [
             { title:"Employee Handbook", desc:"Comprehensive workplace rules and benefits." },
             { title:"Employee Agreement", desc:"Employment terms and role definitions." },
             { title:"Employee Confidentiality Agreement", desc:"Protect sensitive business data." },
-            { title:"Update Filing with Department of Ed", desc:"Maintain compliance with state filings." }
-        ],
-        formations:[
-            { title:"Company Bylaws", desc:"Rulebook governing corporate operations." },
-            { title:"Corporate Shareholder Agreement", desc:"Define investor rights and obligations." },
-            { title:"LLC Operating Agreement", desc:"Govern LLC structure and management." },
-            { title:"CTA Filing", desc:"Meet federal ownership reporting rules." }
-        ],
-        marketing:[
-            { title:"Marketing Material", desc:"Review brand and legal alignment." },
-            { title:"Social Media Material", desc:"Check legality of posts and content." },
-            { title:"Marketing Content Review", desc:"Ensure compliance and accuracy." },
-            { title:"Content Calendar Review", desc:"Verify publication and compliance timing." },
-            { title:"Legal News Newsletter", desc:"Create updates tailored to your business." }
-        ],
-        vendor:[
-            { title:"Reseller Agreement", desc:"Define distributor responsibilities." },
-            { title:"Vendor Agreement", desc:"Formalize vendor terms and expectations." },
-            { title:"Lease Agreement", desc:"Define commercial or residential terms." },
-            { title:"Vendor Non-Disclosure Agreement", desc:"Protect proprietary vendor information." }
-        ]
-    },
-    matter:{
-        client:[
-            { title:"Litigation Co-Counsel Tasks", desc:"Assist litigation teams with filings." },
-            { title:"Litigation Management", desc:"Oversee legal actions end-to-end." }
-        ],
-        employee:[
+            { title:"Update Filing with Department of Ed", desc:"Maintain compliance with state filings." },
             { title:"Employee Reprimand", desc:"Document formal warnings." },
             { title:"Employee Investigation", desc:"Internal workplace reviews." },
             { title:"Employee Termination", desc:"Prepare termination documentation." },
             { title:"Employee Suspension", desc:"Define suspension terms." },
             { title:"Employee Performance Plan", desc:"Improve performance with structured plans." },
             { title:"Set Up 3rd Party Vendor for Audit of Shareholders", desc:"Coordinate external audits." },
-            { title:"HOA creation", desc:"Form a homeowners association." },
             { title:"Non-Disclosure Agreement Matters", desc:"Draft or review NDAs." },
             { title:"Wage Garnishment", desc:"Respond to garnishment orders." },
             { title:"Dispute on Repairs", desc:"Resolve repair-related conflicts." }
-        ],
-        formations:[
+        ]
+    },
+    {
+        category: "Formations Matters",
+        items: [
+            { title:"Company Bylaws", desc:"Rulebook governing corporate operations." },
+            { title:"Corporate Shareholder Agreement", desc:"Define investor rights and obligations." },
+            { title:"LLC Operating Agreement", desc:"Govern LLC structure and management." },
+            { title:"CTA Filing", desc:"Meet federal ownership reporting rules." },
             { title:"IPO Work", desc:"Prepare company for going public." },
             { title:"Capital Funding", desc:"Guidance on raising capital." },
-            { title:"Capital Raise Preparation", desc:"Prepare materials for investors." }
-        ],
-        marketing:[
+            { title:"Capital Raise Preparation", desc:"Prepare materials for investors." },
+            { title:"HOA creation", desc:"Form a homeowners association." }
+        ]
+    },
+    {
+        category: "Marketing Matters",
+        items: [
+            { title:"Marketing Material", desc:"Review brand and legal alignment." },
+            { title:"Social Media Material", desc:"Check legality of posts and content." },
+            { title:"Marketing Content Review", desc:"Ensure compliance and accuracy." },
+            { title:"Content Calendar Review", desc:"Verify publication and compliance timing." },
+            { title:"Legal News Newsletter", desc:"Create updates tailored to your business." },
             { title:"Patent Matter", desc:"Protect inventions legally." },
             { title:"Trade Secret Matter", desc:"Safeguard proprietary processes." },
             { title:"Trademark Matter", desc:"Register and protect trademarks." }
-        ],
-        vendor:[]
+        ]
+    },
+    {
+        category: "Vendor Matters",
+        items: [
+            { title:"Reseller Agreement", desc:"Define distributor responsibilities." },
+            { title:"Vendor Agreement", desc:"Formalize vendor terms and expectations." },
+            { title:"Lease Agreement", desc:"Define commercial or residential terms." },
+            { title:"Vendor Non-Disclosure Agreement", desc:"Protect proprietary vendor information." }
+        ]
     }
-};
+];
 
-/* STATE */
-let selectedWorkType = null;
-let selectedCategory = null;
-
-/* SCREEN LOGIC */
-function selectWorkType(type) {
-    selectedWorkType = type;
-    document.getElementById("matterLoader").style.display = "flex";
-    setTimeout(() => {
-        goTo("screen2");
-        document.getElementById("matterLoader").style.display = "none";
-    }, 500);
-}
-
-function openMatterList(category) {
-    selectedCategory = category;
-
-    const workLabel = selectedWorkType === "document" ? "Document Work" : "Matter Work";
-    const categoryLabels = {
-        client:"Client Matters",
-        employee:"Employee Matters",
-        formations:"Formations Matters",
-        marketing:"Marketing Matters",
-        vendor:"Vendor Matters"
-    };
-
-    document.getElementById("breadcrumbs").innerText =
-        `${workLabel} → ${categoryLabels[category]}`;
-
-    document.getElementById("matterLoader").style.display = "flex";
-
-    setTimeout(() => {
-        renderMatterList();
-        goTo("screen3");
-        document.getElementById("matterLoader").style.display = "none";
-    }, 500);
-}
-
-/* RENDER LIST */
-function renderMatterList() {
+/* RENDER FULL LIST */
+function renderFullList() {
     const list = document.getElementById("matterList");
-    const items = matterData[selectedWorkType][selectedCategory];
 
-    const recommendedSection = `
+    let html = `
         <div class="recommended-section">
             <div class="recommended-title">Recommended Matters</div>
 
@@ -492,50 +375,65 @@ function renderMatterList() {
                 </div>
                 <button class="select-btn">Select</button>
             </div>
-
         </div>
     `;
 
-    const itemsHTML = items.map(m => `
-        <div class="matter-row" onclick="selectMatter()">
-            <div class="matter-left">
-                <div class="matter-title">${m.title}</div>
-                <div class="matter-desc">${m.desc}</div>
-            </div>
-            <button class="select-btn">Select</button>
-        </div>
-    `).join("");
+    allMatters.forEach(group => {
+        html += `<div class="category-title">${group.category}</div>`;
+        group.items.forEach(m => {
+            html += `
+                <div class="matter-row" onclick="selectMatter()">
+                    <div class="matter-left">
+                        <div class="matter-title">${m.title}</div>
+                        <div class="matter-desc">${m.desc}</div>
+                    </div>
+                    <button class="select-btn">Select</button>
+                </div>
+            `;
+        });
+    });
 
-    list.innerHTML = recommendedSection + itemsHTML;
+    list.innerHTML = html;
 }
 
 /* SEARCH */
 function filterMatters() {
     const q = document.getElementById("matterSearch").value.toLowerCase();
-    const items = matterData[selectedWorkType][selectedCategory];
-    const list = document.getElementById("matterList");
 
     if (q.trim() === "") {
-        renderMatterList();
+        renderFullList();
         return;
     }
 
-    const filtered = items.filter(m => m.title.toLowerCase().includes(q));
+    const list = document.getElementById("matterList");
+    let html = "";
 
-    const html = filtered.map(m => `
-        <div class="matter-row" onclick="selectMatter()">
-            <div class="matter-left">
-                <div class="matter-title">${m.title}</div>
-                <div class="matter-desc">${m.desc}</div>
-            </div>
-            <button class="select-btn">Select</button>
-        </div>
-    `).join("");
+    allMatters.forEach(group => {
+        const matches = group.items.filter(m => m.title.toLowerCase().includes(q));
+
+        if (matches.length > 0) {
+            html += `<div class="category-title">${group.category}</div>`;
+            matches.forEach(m => {
+                html += `
+                    <div class="matter-row" onclick="selectMatter()">
+                        <div class="matter-left">
+                            <div class="matter-title">${m.title}</div>
+                            <div class="matter-desc">${m.desc}</div>
+                        </div>
+                        <button class="select-btn">Select</button>
+                    </div>
+                `;
+            });
+        }
+    });
 
     list.innerHTML = html;
 }
 
-/* FINAL CLICK → LOADER → REDIRECT */
+/* LOAD DEFAULT LIST */
+renderFullList();
+
+/* REDIRECT ON SELECT */
 function selectMatter() {
     document.getElementById("matterLoader").style.display = "flex";
     setTimeout(() => {
