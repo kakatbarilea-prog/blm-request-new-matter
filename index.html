@@ -272,6 +272,72 @@
     transition: opacity 0.5s ease, transform 0.5s ease;
 }
 
+/* MATTER DETAILS DRAWER */
+#matterDrawer {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 100%; /* overlay always full */
+    height: 100%;
+    background: rgba(0,0,0,0.25);
+    backdrop-filter: blur(2px);
+    overflow: hidden;
+    z-index: 10000;
+    display: flex;
+    justify-content: flex-end;
+    pointer-events: none; /* clicks ignored when closed */
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+
+#drawerContent {
+    background: #ffffff;
+    width: 420px;
+    height: 100%;
+    padding: 35px;
+    box-shadow: -4px 0 14px rgba(0,0,0,0.15);
+    overflow-y: auto;
+    position: relative;
+    transform: translateX(100%); /* hidden right */
+    transition: transform 0.35s ease;
+}
+
+
+#drawerContent img {
+    width: 100%;
+    border-radius: 10px;
+    margin-bottom: 18px;
+}
+
+#closeDrawer {
+    position: absolute;
+    right: 18px;
+    top: 18px;
+    background: #F1F1F1;
+    color: #777;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: 1px solid #D3D3D3;
+    cursor: pointer;
+    font-size: 18px;
+    font-weight: 600;
+}
+
+#closeDrawer:hover {
+    background: #E4E4E4;
+}
+
+#matterDrawer.drawer-open {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+#matterDrawer.drawer-open #drawerContent {
+    transform: translateX(0);
+}
+
 
 
 </style>
@@ -323,6 +389,29 @@
 
 <!-- RECOMMENDED MATTERS -->
 <div id="matterList"></div>
+
+<!-- NEW MATTER DETAILS DRAWER -->
+<div id="matterDrawer">
+    <div id="drawerContent" onclick="event.stopPropagation()">
+        <button id="closeDrawer">×</button>
+        <img id="drawerImage" 
+             src="https://d34hmiuaex7c0.cloudfront.net/5052/uploads/cmaspages/gallery/galleryitem_1673284764189.jpg" 
+             alt="Matter"
+        />
+        <h2 id="drawerTitle">Privacy Policy</h2>
+        <p id="drawerDesc">
+            Most businesses require a Privacy Policy to comply with data protection and transparency requirements.
+            This document defines how you collect, use & store customer information.
+        </p>
+        <p id="drawerSteps">
+            <strong>What’s next?</strong><br>
+            We will gather details from you, then prepare the correct legal terms tailored to your needs.
+        </p>
+
+        <button class="btn-continue" onclick="selectMatter()">Continue</button>
+    </div>
+</div>
+
 
 <!-- SHOW ALL MATTER TYPES BUTTON BELOW RECOMMENDED -->
 <button 
@@ -457,7 +546,8 @@ function renderFullList() {
 
     displayedRecommended.forEach((item, index) => {
         html += `
-            <div class="matter-row recommended-row">
+            <div class="matter-row recommended-row" onclick="openDrawer('${item.title}', '${item.desc}')">
+
                 <div class="matter-left">
                     <div class="matter-title">★ ${item.title}</div>
                     <div class="matter-desc">${item.desc}</div>
@@ -503,7 +593,8 @@ function generateAllMattersHTML() {
         html += `<div class="category-title">${group.category}</div>`;
         group.items.forEach(m => {
             html += `
-                <div class="matter-row" onclick="selectMatter()">
+                <div class="matter-row" onclick="openDrawer('${m.title}', '${m.desc}')">
+
                     <div class="matter-left">
                         <div class="matter-title">${m.title}</div>
                         <div class="matter-desc">${m.desc}</div>
@@ -536,12 +627,14 @@ function filterMatters() {
             html += `<div class="category-title">${group.category}</div>`;
             matches.forEach(m => {
                 html += `
-                    <div class="matter-row" onclick="selectMatter()">
+                    <div class="matter-row" onclick="openDrawer('${m.title}', '${m.desc}')">
+
                         <div class="matter-left">
                             <div class="matter-title">${m.title}</div>
                             <div class="matter-desc">${m.desc}</div>
                         </div>
-                        <button class="select-btn">Select</button>
+                        <button class="select-btn" onclick="selectMatter(event)">Continue</button>
+
                     </div>
                 `;
             });
@@ -564,6 +657,19 @@ function toggleAllMatters() {
     }
 }
 
+function openDrawer(title, desc) {
+    document.getElementById("drawerTitle").innerText = title;
+    document.getElementById("drawerDesc").innerText = desc;
+    document.getElementById("matterDrawer").classList.add("drawer-open");
+}
+
+document.getElementById("closeDrawer").addEventListener("click", () => {
+    document.getElementById("matterDrawer").classList.remove("drawer-open");
+});
+
+document.getElementById("matterDrawer").addEventListener("click", () => {
+    document.getElementById("matterDrawer").classList.remove("drawer-open");
+});
 
 /* LOAD DEFAULT LIST */
 renderFullList();
