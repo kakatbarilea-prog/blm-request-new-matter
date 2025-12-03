@@ -82,16 +82,18 @@
     }
 
     .btn-continue {
-        background: #0F2D56;
-        color: white;
-        width: 100%;
-        padding: 14px 0;
-        border-radius: 10px;
-        font-size: 17px;
-        font-weight: 600;
-        cursor: pointer;
-        border: none;
-    }
+    background: #0F2D56;
+    color: white;
+    padding: 10px 22px; /* NORMAL button size */
+    border-radius: 10px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    width: auto; /* STOP full width */
+    display: inline-block; /* Fits to content */
+    margin-top: 20px; /* Nicely spaced */
+}
 
     .btn-continue:hover {
         background: #0c2343;
@@ -299,9 +301,15 @@
     box-shadow: -4px 0 14px rgba(0,0,0,0.15);
     overflow-y: auto;
     position: relative;
-    transform: translateX(100%); /* hidden right */
+    transform: translateX(100%);
     transition: transform 0.35s ease;
+    text-align: left; /* NEW */
 }
+
+#drawerTitle {
+    text-align: center; /* KEEP heading centered */
+}
+
 
 
 #drawerContent img {
