@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <title>Matter Selection</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
 <style>
     body {
@@ -180,12 +181,7 @@
         text-align: left;
     }
 
-    /* ⭐ Recommended Design */
-    .recommended-section {
-        border-bottom: 1px solid #d3d7e0;
-        margin-bottom: 25px;
-        padding-bottom: 20px;
-    }
+
 
     .recommended-title {
         font-size: 18px;
@@ -232,6 +228,52 @@
     .select-btn:hover {
         background: #0c2343;
     }
+
+.recommended-row {
+    position: relative;
+    overflow: visible;
+}
+
+/* NEW absolute "corner-hug" position */
+.recommended-row .remove-btn {
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    width: 24px;
+    height: 24px;
+    font-size: 16px;
+    font-weight: 500;
+    background: #F1F1F1;
+    border-radius: 50%;
+    border: 1px solid #D3D3D3;
+    color: #777;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: opacity 0.15s ease, transform 0.15s ease;
+    z-index: 20;
+}
+
+
+.recommended-row .remove-btn:hover {
+    background: #E4E4E4;
+    border-color: #C8C8C8;
+    color: #666;
+    transform: scale(1.05);
+}
+
+
+
+.fade-out {
+    opacity: 0;
+    transform: translateX(20px);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+
+
 </style>
 </head>
 
@@ -247,26 +289,63 @@
 <!-- ONLY SCREEN NOW (former Screen 3) -->
 <div id="screen3" class="page-wrap">
 
-    <h1 id="screen3Title">Select a Matter Type</h1>
+    <h1 id="screen3Title">What seems to be the matter?</h1>
 
-    <!-- SEARCH BAR -->
-    <input 
-        id="matterSearch" 
-        type="text" 
-        placeholder="Search matter type..." 
-        oninput="filterMatters()"
-        style="
-            width: 350px;
-            padding: 12px 15px;
-            border-radius: 10px;
-            border: 1px solid #d5d7dc;
-            margin-bottom: 35px;
-            font-size: 15px;
-            text-align:left;
-            display:block;
-            margin-left:0;
-        "
-    />
+<!-- SEARCH BAR -->
+<div style="position: relative; width: 100%; margin-bottom: 35px;">
+  <i class="fa-solid fa-magnifying-glass" 
+     style="
+         position:absolute;
+         top:50%;
+         left:16px;
+         transform:translateY(-50%);
+         color:#6B7280;
+         font-size:16px;
+     ">
+  </i>
+
+  <input
+      id="matterSearch"
+      type="text"
+      placeholder="What legal chaos do we need to fix today?"
+      oninput="filterMatters()"
+      style="
+          width: 95%;
+          padding: 14px 18px 14px 45px;
+          border-radius: 12px;
+          border: 1px solid #d5d7dc;
+          font-size: 16px;
+          text-align:left;
+          display:block;
+      "
+  />
+</div>
+
+<!-- RECOMMENDED MATTERS -->
+<div id="matterList"></div>
+
+<!-- SHOW ALL MATTER TYPES BUTTON BELOW RECOMMENDED -->
+<button 
+    id="showAllBtn"
+    onclick="toggleAllMatters()"
+    style="
+        margin-top: 10px;
+        margin-bottom: 25px;
+        background:#0F2D56;
+        color:white;
+        padding:12px 18px;
+        border-radius:10px;
+        border:none;
+        font-size:15px;
+        font-weight:600;
+        cursor:pointer;
+    ">
+    All Matter Types
+</button>
+
+<!-- COLLAPSIBLE FULL LIST BELOW BUTTON -->
+<div id="allMattersContainer" style="display:none; margin-top:25px;"></div>
+
 
     <div id="matterList"></div>
 </div>
@@ -348,39 +427,77 @@ const allMatters = [
     }
 ];
 
-/* RENDER FULL LIST */
+/* RECOMMENDED MATTERS QUEUE */
+let recommendedQueue = [
+    { title:"Sales Contract", desc:"Draft or review enforceable sales terms." },
+    { title:"Employee Agreement", desc:"Employment terms and role definitions." },
+    { title:"Non-Disclosure Agreement Matters", desc:"Draft or review NDAs." },
+    { title:"Vendor Non-Disclosure Agreement", desc:"Protect proprietary vendor information." }
+];
+
+/* currently displayed recommended items */
+let displayedRecommended = [
+    { title:"Privacy Policy", desc:"Create or review clear and compliant policies for handling user or customer data." },
+    { title:"Terms & Services", desc:"Draft or review terms that govern how users engage with your product or service." },
+    { title:"Operating Agreement", desc:"Structure your LLC with a foundational document that governs internal operations." }
+];
+
 function renderFullList() {
     const list = document.getElementById("matterList");
+
+    if (displayedRecommended.length === 0) {
+        list.innerHTML = "";
+        return;
+    }
 
     let html = `
         <div class="recommended-section">
             <div class="recommended-title">Recommended Matters</div>
-
-            <div class="matter-row recommended-row" onclick="selectMatter()">
-                <div class="matter-left">
-                    <div class="matter-title">★ Privacy Policy</div>
-                    <div class="matter-desc">Create or review clear and compliant policies for handling user or customer data.</div>
-                </div>
-                <button class="select-btn">Select</button>
-            </div>
-
-            <div class="matter-row recommended-row" onclick="selectMatter()">
-                <div class="matter-left">
-                    <div class="matter-title">★ Terms & Services</div>
-                    <div class="matter-desc">Draft or review terms that govern how users engage with your product or service.</div>
-                </div>
-                <button class="select-btn">Select</button>
-            </div>
-
-            <div class="matter-row recommended-row" onclick="selectMatter()">
-                <div class="matter-left">
-                    <div class="matter-title">★ Operating Agreement</div>
-                    <div class="matter-desc">Structure your LLC with a foundational document that governs internal operations.</div>
-                </div>
-                <button class="select-btn">Select</button>
-            </div>
-        </div>
     `;
+
+    displayedRecommended.forEach((item, index) => {
+        html += `
+            <div class="matter-row recommended-row">
+                <div class="matter-left">
+                    <div class="matter-title">★ ${item.title}</div>
+                    <div class="matter-desc">${item.desc}</div>
+                </div>
+                <button class="select-btn" onclick="selectMatter(event)">Continue</button>
+                <button class="remove-btn" onclick="removeRecommended(event, ${index})">×</button>
+            </div>
+        `;
+    });
+
+    html += `</div>`;
+    list.innerHTML = html;
+}
+
+
+/* remove recommended item with fade and replace with next in queue */
+function removeRecommended(e, index) {
+    e.stopPropagation(); // prevent triggering selectMatter
+
+    const row = e.target.closest('.matter-row');
+    row.classList.add('fade-out');
+
+    row.addEventListener('transitionend', () => {
+        // remove from displayedRecommended
+        displayedRecommended.splice(index, 1);
+
+        // add next item from queue if available
+        if(recommendedQueue.length > 0){
+            const next = recommendedQueue.shift();
+            displayedRecommended.push(next);
+        }
+
+        // re-render
+        renderFullList();
+    });
+}
+
+
+function generateAllMattersHTML() {
+    let html = "";
 
     allMatters.forEach(group => {
         html += `<div class="category-title">${group.category}</div>`;
@@ -391,13 +508,13 @@ function renderFullList() {
                         <div class="matter-title">${m.title}</div>
                         <div class="matter-desc">${m.desc}</div>
                     </div>
-                    <button class="select-btn">Select</button>
+                    <button class="select-btn">Continue</button>
                 </div>
             `;
         });
     });
 
-    list.innerHTML = html;
+    return html;
 }
 
 /* SEARCH */
@@ -433,6 +550,20 @@ function filterMatters() {
 
     list.innerHTML = html;
 }
+function toggleAllMatters() {
+    const box = document.getElementById("allMattersContainer");
+    const btn = document.getElementById("showAllBtn");
+
+    if (box.style.display === "none") {
+        box.innerHTML = generateAllMattersHTML();
+        box.style.display = "block";
+        btn.innerText = "Hide Matter Types";
+    } else {
+        box.style.display = "none";
+        btn.innerText = "All Matter Types";
+    }
+}
+
 
 /* LOAD DEFAULT LIST */
 renderFullList();
