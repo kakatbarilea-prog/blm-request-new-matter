@@ -420,7 +420,8 @@
             You’ll move through a simple, step-by-step process with clear instructions and updates. Everything stays organized so you always know what’s happening.
         </p>
 
-        <button class="btn-continue" onclick="selectMatter()">Continue</button>
+        <button class="btn-continue" onclick="selectMatter(event)">Continue</button>
+
     </div>
 </div>
 
@@ -611,7 +612,8 @@ function generateAllMattersHTML() {
                         <div class="matter-title">${m.title}</div>
                         <div class="matter-desc">${m.desc}</div>
                     </div>
-                    <button class="select-btn">Continue</button>
+                   <button class="select-btn" onclick="selectMatter(event)">Continue</button>
+
                 </div>
             `;
         });
@@ -687,12 +689,14 @@ document.getElementById("matterDrawer").addEventListener("click", () => {
 renderFullList();
 
 /* REDIRECT ON SELECT */
-function selectMatter() {
+function selectMatter(event) {
+    event.stopPropagation(); // prevent row click
     document.getElementById("matterLoader").style.display = "flex";
     setTimeout(() => {
         window.location.href = "https://kakatbarilea-prog.github.io/blm-matter-document-upload/";
     }, 800);
 }
+
 </script>
 
 </body>
